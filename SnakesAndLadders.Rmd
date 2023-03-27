@@ -1,0 +1,95 @@
+---
+title: "Snakes and Ladders"
+output: html_document
+date: "2023-03-27"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Snakes and Ladders
+
+```{r}
+roll.die <- function(){
+  sample(size=1,1:6)
+}
+```
+
+```{r}
+rand.ladders <- function(n.ladders){
+  set.seed(47)
+  
+  ladder.starts <- sample(size=10,1:90,replace=FALSE)
+  
+  ladder.ends <- c()
+  
+  for(i in 1:n.ladders){
+    le <- ceiling(ladder.starts[i]/10)*10 # ensures ladder ends at least one row above
+    m <- min(40,99-le)
+    ladder.ends <- c(ladder.ends,le+sample(size=1,1:m))
+  }
+  
+  ladders <- data.frame(ladder.starts,ladder.ends)
+  
+  return(ladders)
+}
+```
+
+```{r}
+rand.snakes <- function(n.snakes){
+  set.seed(47)
+  
+  snakes.starts <- sample(size=10,11:99,replace=FALSE)
+  
+  snakes.ends <- c()
+  
+  for(i in 1:n.snakes){
+    se <- floor(snakes.starts[i]/10)*10 # ensures snake ends at least one row below
+    m <- min(40,se)
+    snakes.ends <- c(snakes.ends,se-sample(size=1,0:m))
+  }
+  
+  snakes <- data.frame(snakes.starts,snakes.ends)
+  
+  return(snakes)
+}
+```
+
+```{r}
+ladders <- rand.ladders(10)
+snakes <- rand.snakes(10)
+ladders
+snakes
+```
+
+```{r}
+play <- function(ladders,snakes){
+  state <- 0
+  
+  while(state < 100){
+    state <- state + roll.die()
+    
+    while(state %in% ladders[,1] | state %in% snakes[,1]){
+      
+      if(state %in% ladders[,1]){
+        state <- ladders[which(ladders[,1] == state),2]
+      }
+      else{
+        state <- snakes[which(snakes[,1] == state),2]
+      }
+      
+    }
+    
+    print(state)
+    
+  }
+}
+```
+
+```{r}
+play(ladders, snakes)
+```
+
+
+
