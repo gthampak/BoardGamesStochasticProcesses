@@ -1,6 +1,8 @@
 ---
 title: "Snakes and Ladders"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 date: "2023-03-27"
 ---
 
@@ -70,10 +72,6 @@ initialize.board <- function(dim, n.ladders, n.snakes){
 ```
 
 ```{r}
-board <- initialize.board(10,10,10)
-```
-
-```{r}
 play.turn <- function(state,board){
   
   ladders <- board$ladders
@@ -101,11 +99,8 @@ play <- function(board){
   
   while(state < (board$dim)^2){
     
-    state <- state+10
     state <- play.turn(state,board)
     turns <- turns+1
-    
-    print(state)
     
   }
   
@@ -114,28 +109,22 @@ play <- function(board){
 ```
 
 ```{r}
-play(board)
-```
+board <- initialize.board(10,10,10)
 
-```{r}
-x <- 0
-while(x < 10){
-  print(x)
-  x <- x+1
-}
-```
-
-```{r}
 plays <- c()
 for(i in 1:1000){
-  plays <- c(plays,play(board$ladders,board$snakes))
+  plays <- c(plays,play(board))
 }
 ```
 
-
------
-
 ```{r}
+hist(plays)
+boxplot(plays)
+```
+
+### other functions
+
+```
 rand.ladders <- function(n.ladders){
   set.seed(47)
   
@@ -155,7 +144,7 @@ rand.ladders <- function(n.ladders){
 }
 ```
 
-```{r}
+```
 rand.snakes <- function(n.snakes){
   set.seed(47)
   

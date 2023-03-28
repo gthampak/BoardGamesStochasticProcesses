@@ -1,0 +1,44 @@
+---
+title: "CosmicWimpout"
+output:
+  pdf_document: default
+  html_document: default
+date: "2023-03-28"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+roll.dice <- function(n.dice){
+  return(sample(size=n.dice,1:6,replace=TRUE))
+}
+```
+
+```{r}
+roll.dice(5)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
