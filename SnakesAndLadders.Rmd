@@ -92,9 +92,8 @@ play.turn <- function(state,board){
 ```
 
 ```{r}
-play <- function(board){
-  
-  state <- 0
+# default to play from beginning
+play <- function(board,state=0){
   turns <- 0
   
   while(state < (board$dim)^2){

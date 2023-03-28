@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
-roll.dice <- function(n.dice){
+roll.dice <- function(n.dice, wild){
   return(sample(size=n.dice,1:6,replace=TRUE))
 }
 ```
@@ -20,7 +20,9 @@ roll.dice <- function(n.dice){
 ```{r}
 roll.dice(5)
 ```
+```{r}
 
+```
 
 
 
