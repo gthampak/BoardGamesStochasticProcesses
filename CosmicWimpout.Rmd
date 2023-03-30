@@ -11,6 +11,18 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
+## `roll.dice` function
+
+Rolls a set of dice in Cosmic Wimpout
+
+**Input: **
+- n.dice: number of dice to roll
+- wild (boolean): whether the wild die is in the set of dice
+
+**Output: **
+- dice: set of dice
+- wild: the wild die (NULL if wild not rolled)
+
 ```{r}
 roll.dice <- function(n.dice, wild){
   if(wild){
@@ -32,11 +44,19 @@ roll.dice(5,TRUE)
 roll.dice(4,FALSE)
 ```
 
-```{r}
-4+!TRUE
-```
+## `score` function
 
+Scores a roll.
 
+**Input: ** 
+- A Comic Wimpout roll (`roll.dice` function defined above)
+- Starting score to add on to
+
+**Output: **
+- Score: Player score (excludes using wild die as an individual 5/10)
+- wild.used: tells player whether the wild die was used to complete a set
+- dice.remaining: tells player how many dice they have for their next roll
+- must.continue (boolean): tells player if they need to continue to roll.
 
 ```{r}
 score <- function(roll,score=0){
