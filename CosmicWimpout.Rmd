@@ -13,26 +13,100 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 roll.dice <- function(n.dice, wild){
-  return(sample(size=n.dice,1:6,replace=TRUE))
+  if(wild){
+    n.dice <- n.dice-1
+    w <- sample(size=1,c(10,2:6))
+    dice <- sample(size=n.dice,c(10,2:6),replace=TRUE)
+  }
+  else{
+    w <- NULL
+    dice <- sample(size=n.dice,c(10,2:6),replace=TRUE)
+  }
+  
+  return(list(dice=dice,wild=w))
 }
 ```
 
 ```{r}
-roll.dice(5)
+roll.dice(5,TRUE)
+roll.dice(4,FALSE)
 ```
+
 ```{r}
-
+4+!TRUE
 ```
 
 
 
+```{r}
+score <- function(roll,score=0){
+  
+  wild.used <- FALSE
+  w <- roll$wild; if(is.null(w)) wild.used <- TRUE
+  r <- roll$dice
+  
+  must.continue <- FALSE
+  dice.remaining <- length(r)
+  
+  for(i in c(10,6:2)){
+    n <- length(which(r==i))
+    
+    if(n==4){
+      if(w==i|w==3){ # if wild matches i or wild completes 5
+        score <- score + i*100
+        wild.used <- TRUE
+        
+        must.continue <- TRUE # all five dice scored
+      }
+      else{ # do not use wild
+        # score 3/4
+        score <- score + i*10
+        dice.remaining <- dice.remaining-3
+        
+        # if 4th is a 10 or 5
+        score <- score + (i==5|i==10)*i
+        dice.remaining <- dice.remaining - (i==5|i==10)
+      }
+    }
+    else if(n==3){
+      score <- score + i*10
+      dice.remaining <- dice.remaining-3
+      must.continue <- TRUE # triple
+    }
+    else if(n==2){
+      if((w==i|w==3)&!wild.used){
+        score <- score + i*10
+        wild.used <- TRUE
+        must.continue <- TRUE # triple
+      }
+      else{
+        # if 5/10 dice, score them, remove two dice
+        score <- score + (i==5|i==10)*i*2 
+        dice.remaining <- dice.remaining - (i==5|i==10)*2 
+      }
+    }
+    else if(n==1){
+      # if 5/10 die, score it, remove one dice
+        score <- score + (i==5|i==10)*i
+        dice.remaining <- dice.remaining - (i==5|i==10)
+    }
+  }
+  
+  dice.remaining <- dice.remaining + !wild.used
+  if(dice.remaining==0) must.continue <- TRUE
+  
+  return(list(score=score,wild.used=wild.used,dice.remaining=dice.remaining,must.continue=must.continue))
+}
+```
 
+```{r}
+roll <- roll.dice(5,wild=TRUE)
+roll
+```
 
-
-
-
-
-
+```{r}
+score(roll)
+```
 
 
 
