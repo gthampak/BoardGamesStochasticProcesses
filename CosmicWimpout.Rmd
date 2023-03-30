@@ -65,8 +65,9 @@ score <- function(roll,score=0){
   w <- roll$wild; if(is.null(w)) wild.used <- TRUE
   r <- roll$dice
   
-  must.continue <- FALSE
   dice.remaining <- length(r)
+  must.continue <- FALSE
+  triple <- FALSE
   
   for(i in c(10,6:2)){
     n <- length(which(r==i))
@@ -82,6 +83,8 @@ score <- function(roll,score=0){
         # score 3/4
         score <- score + i*10
         dice.remaining <- dice.remaining-3
+        triple <- i
+        must.continue <- TRUE
         
         # if 4th is a 10 or 5
         score <- score + (i==5|i==10)*i
@@ -91,12 +94,14 @@ score <- function(roll,score=0){
     else if(n==3){
       score <- score + i*10
       dice.remaining <- dice.remaining-3
+      triple <- i
       must.continue <- TRUE # triple
     }
     else if(n==2){
       if((w==i|w==3)&!wild.used){
         score <- score + i*10
         wild.used <- TRUE
+        triple <- i
         must.continue <- TRUE # triple
       }
       else{
@@ -114,8 +119,13 @@ score <- function(roll,score=0){
   
   dice.remaining <- dice.remaining + !wild.used
   if(dice.remaining==0) must.continue <- TRUE
+  else if(dice.remaining==5){ # if no dice scored, must score wild
+    score <- score <- w*(w==5|w==10)
+    wild.used <- (w==5|w==10)
+    dice.remaining <- dice.remaining-(w==5|w==10)
+  }
   
-  return(list(score=score,wild.used=wild.used,dice.remaining=dice.remaining,must.continue=must.continue))
+  return(list(score=score,wild.used=wild.used,dice.remaining=dice.remaining,must.continue=must.continue,triple=triple))
 }
 ```
 
@@ -128,7 +138,14 @@ roll
 score(roll)
 ```
 
-
+```{r}
+play <- function(){
+  roll.dice(5,TRUE)
+  
+  
+  
+}
+```
 
 
 
