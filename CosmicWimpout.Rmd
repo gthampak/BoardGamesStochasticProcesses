@@ -57,6 +57,7 @@ Scores a roll.
 - wild.used: tells player whether the wild die was used to complete a set
 - dice.remaining: tells player how many dice they have for their next roll
 - must.continue (boolean): tells player if they need to continue to roll.
+- triple: if a triple was rolled, which tripple. False otherwise.
 
 ```{r}
 score <- function(roll,score=0){
