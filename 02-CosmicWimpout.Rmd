@@ -79,8 +79,7 @@ score <- function(roll,score=0){
         wild.used <- TRUE
         
         must.continue <- TRUE # all five dice scored
-      }
-      else{ # do not use wild
+      } else{ # do not use wild
         # score 3/4
         score <- score + i*10
         dice.remaining <- dice.remaining-3
@@ -120,8 +119,15 @@ score <- function(roll,score=0){
   
   dice.remaining <- dice.remaining + !wild.used
   if(dice.remaining==0) must.continue <- TRUE
+  else if(dice.remaining==1){
+    if(!wild.used){
+      score <- score + w*(w==5|w==10)
+      wild.used <- (w==5|w==10)
+      dice.remaining <- dice.remaining-(w==5|w==10)
+    }
+  }
   else if(dice.remaining==5){ # if no dice scored, must score wild
-    score <- score <- w*(w==5|w==10)
+    score <- score + w*(w==5|w==10)
     wild.used <- (w==5|w==10)
     dice.remaining <- dice.remaining-(w==5|w==10)
   }
@@ -139,16 +145,27 @@ roll
 score(roll)
 ```
 
+## Experiments
+
 ```{r}
-play <- function(){
-  roll.dice(5,TRUE)
+  roll <- roll.dice(5,TRUE)
+  
+  s <- score(roll)
+  continue <- FALSE
+  
+  if(s$must.continue){
+    continue <- TRUE
+  } else{
+    continue <- (s$score < 50) # continue if score is less than 50
+  }
   
   
-  
-}
+  if(s$must.continue){
+    roll <- roll.dice(s$dice.remaining,!s$wild.used)
+  } else{
+    roll <-
+  }
 ```
-
-
 
 
 
