@@ -38,22 +38,6 @@ trans.mat <- function(board){
     }
   }
   
-  # for(i in 5:1){
-  #   for(j in (spaces-i+1):spaces){
-  #     if( j %in% board$ladders$ladder.starts){
-  #       index <- which(board$ladders$ladder.starts == j)
-  #       tm[spaces-i,board$ladders$ladder.ends[index]] <- tm[spaces-i,board$ladders$ladder.ends[index]]+1/i
-  #     }
-  #     else if( j %in% board$snakes$snakes.starts){
-  #       index <- which(board$snakes$snakes.starts == j)
-  #       tm[spaces-i,board$snakes$snakes.ends[index]] <- tm[spaces-i,board$snakes$snakes.ends[index]]+1/i
-  #     }
-  #     else{
-  #       tm[spaces-i,j] <- tm[spaces-i,j]+1/i
-  #     }
-  #   }
-  # }
-  
   tm[spaces,spaces] <- 1
   
   return(fractions(tm))
@@ -83,31 +67,24 @@ print.tm <- function(tm){
 }
 ```
 
-# Board 1
-
 ```{r}
-board <- list()
-board$dim <- 4
-board$ladders <- data.frame(ladder.starts = c(3,5),ladder.ends = c(10,12))
-board$snakes <- data.frame(snakes.starts = c(11,15), snakes.ends = c(4,8))
-```
-
-```{r}
-tm <- trans.mat(board)
-print.tm(tm)
-sum(tm)
-```
-
-```{r}
-expected.turns.vector <- function(board){
+# expected Number of turns and variance until Absorbing state (win)
+E.V.turns.vector <- function(board){ 
   tm <- trans.mat(board)
   
   F.dim <- board$dim^2-1
   Q <- tm[1:F.dim,1:F.dim]
   I <- matrix(0,nrow=F.dim,ncol=F.dim); for(i in 1:F.dim) I[i,i] <- 1
+  
+  N <- solve(I-Q) # F
   one.vec <- matrix(1,nrow=F.dim,ncol=1)
   
-  return(round(solve(I-Q) %*% one.vec,2))
+  expected <- N%*%one.vec
+  t.squared <- expected^2 # element-wise squared
+  
+  variance <- (2*N-I)%*%expected - t.squared
+  
+  return(list(expected=round(expected,2),sd=round(sqrt(variance),2),variance=round(variance,2)))
 }
 ```
 
@@ -124,25 +101,39 @@ expected.turns <- function(board,start.state){
 }
 ```
 
+# Board 1
+
 ```{r}
-F.dim <- board$dim^2-1
-Q <- tm[1:F.dim,1:F.dim]
-I <- matrix(0,nrow=F.dim,ncol=F.dim)
-for(i in 1:F.dim) I[i,i] <- 1
-one.vec <- matrix(1,nrow=F.dim,ncol=1)
-round(solve(I-Q) %*% one.vec,2)
+board <- list()
+board$dim <- 4
+board$ladders <- data.frame(ladder.starts = c(3,5),ladder.ends = c(10,12))
+board$snakes <- data.frame(snakes.starts = c(11,15), snakes.ends = c(4,8))
 ```
 
 ```{r}
-expected.turns.vector(board)
+tm <- trans.mat(board)
+# print.tm(tm)
+sum(tm)
 ```
 
+```{r}
+EV <- E.V.turns.vector(board)
+sqrt(EV$variance)
+```
 
+# Board 2
 
+```{r}
+set.seed(47)
+board <- initialize.board(12,12,12)
+# board
+```
 
-
-
-
+```{r}
+EV <- E.V.turns.vector(board)
+EV$expected
+EV$sd
+```
 
 
 

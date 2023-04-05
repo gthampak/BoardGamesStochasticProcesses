@@ -24,7 +24,7 @@ board
 
 ```{r}
 plays <- c()
-for(i in 1:1000){
+for(i in 1:10000){
   plays <- c(plays,play(board))
 }
 ```
@@ -32,6 +32,31 @@ for(i in 1:1000){
 ```{r}
 hist(plays)
 mean(plays)
+sd(plays)^2
 boxplot(plays)
 ```
+
+# Board 2
+
+```{r}
+set.seed(47)
+board <- initialize.board(12,12,12)
+```
+
+```{r}
+plays2 <- c()
+for(i in 1:1000){
+  plays2 <- c(plays2,play(board))
+}
+```
+
+```{r}
+hist(plays2,breaks=100)
+mean(plays2)
+sd(plays2)^2
+boxplot(plays2)
+```
+
+
+
 

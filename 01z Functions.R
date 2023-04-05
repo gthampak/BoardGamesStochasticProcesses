@@ -1,6 +1,4 @@
-roll.die <- function(){
-  return(sample(size=1,1:6))
-}
+# Game Set Up Functions
 
 initialize.board <- function(dim, n.ladders, n.snakes){
   
@@ -52,6 +50,12 @@ initialize.board <- function(dim, n.ladders, n.snakes){
   
 }
 
+# Simulation Functions
+
+roll.die <- function(){
+  return(sample(size=1,1:6))
+}
+
 play.turn <- function(state,board){
   
   ladders <- board$ladders
@@ -86,10 +90,12 @@ play <- function(board,state=0){
   return(turns)
 }
 
+# Markov Chains Modeling Functions
+
 trans.mat <- function(board){
   spaces <- (board$dim)^2
   tm <- matrix(0,nrow=spaces,ncol=spaces)
-  for(i in 1:(spaces-6)){
+  for(i in 1:(spaces)){
     for(j in 1:6){
       if( (i+j) %in% board$ladders$ladder.starts){
         index <- which(board$ladders$ladder.starts == (i+j))
@@ -100,23 +106,8 @@ trans.mat <- function(board){
         tm[i,board$snakes$snakes.ends[index]] <- tm[i,board$snakes$snakes.ends[index]] +1/6
       }
       else{
-        tm[i,i+j] <- tm[i,i+j]+1/6
-      }
-    }
-  }
-  
-  for(i in 5:1){
-    for(j in (spaces-i+1):spaces){
-      if( j %in% board$ladders$ladder.starts){
-        index <- which(board$ladders$ladder.starts == j)
-        tm[spaces-i,board$ladders$ladder.ends[index]] <- tm[spaces-i,board$ladders$ladder.ends[index]]+1/i
-      }
-      else if( j %in% board$snakes$snakes.starts){
-        index <- which(board$snakes$snakes.starts == j)
-        tm[spaces-i,board$snakes$snakes.ends[index]] <- tm[spaces-i,board$snakes$snakes.ends[index]]+1/i
-      }
-      else{
-        tm[spaces-i,j] <- tm[spaces-i,j]+1/i
+        if(i+j > spaces) tm[i,i] <- tm[i,i]+1/6
+        else tm[i,i+j] <- tm[i,i+j]+1/6
       }
     }
   }
@@ -137,6 +128,32 @@ print.tm <- function(tm){
   
   cat(p)
 }
+
+E.V.turns.vector <- function(board){ 
+  tm <- trans.mat(board)
+  
+  F.dim <- board$dim^2-1
+  Q <- tm[1:F.dim,1:F.dim]
+  I <- matrix(0,nrow=F.dim,ncol=F.dim); for(i in 1:F.dim) I[i,i] <- 1
+  
+  N <- solve(I-Q) # F
+  one.vec <- matrix(1,nrow=F.dim,ncol=1)
+  
+  expected <- N%*%one.vec
+  t.squared <- expected^2 # element-wise squared
+  
+  variance <- (2*N-I)%*%expected - t.squared
+  
+  return(list(expected=round(expected,2),variance=round(variance,2)))
+}
+
+
+
+
+
+
+
+
 
 
 
