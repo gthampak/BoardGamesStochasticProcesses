@@ -99,14 +99,43 @@ sum(tm)
 ```
 
 ```{r}
+expected.turns.vector <- function(board){
+  tm <- trans.mat(board)
+  
+  F.dim <- board$dim^2-1
+  Q <- tm[1:F.dim,1:F.dim]
+  I <- matrix(0,nrow=F.dim,ncol=F.dim); for(i in 1:F.dim) I[i,i] <- 1
+  one.vec <- matrix(1,nrow=F.dim,ncol=1)
+  
+  return(round(solve(I-Q) %*% one.vec,2))
+}
+```
+
+```{r}
+expected.turns <- function(board,start.state){
+  tm <- trans.mat(board)
+  
+  F.dim <- board$dim^2-1
+  Q <- tm[1:F.dim,1:F.dim]
+  I <- matrix(0,nrow=F.dim,ncol=F.dim); for(i in 1:F.dim) I[i,i] <- 1
+  one.vec <- matrix(1,nrow=F.dim,ncol=1)
+  
+  return(round(solve(I-Q) %*% one.vec,2)[start.state])
+}
+```
+
+```{r}
 F.dim <- board$dim^2-1
 Q <- tm[1:F.dim,1:F.dim]
 I <- matrix(0,nrow=F.dim,ncol=F.dim)
 for(i in 1:F.dim) I[i,i] <- 1
-fractions(solve(I-Q))
+one.vec <- matrix(1,nrow=F.dim,ncol=1)
+round(solve(I-Q) %*% one.vec,2)
 ```
 
-
+```{r}
+expected.turns.vector(board)
+```
 
 
 
