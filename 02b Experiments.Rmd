@@ -1,0 +1,84 @@
+---
+title: "02b Experiments"
+output: html_document
+date: "2023-03-30"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+source("02a CosmicWimpoutFunctions.R")
+```
+
+```{r}
+turn <- function(threshold=0){
+  # data collection
+  rolls <- c()
+  scores <- c()
+  
+  roll <- roll.dice(5,TRUE); rolls <- c(rolls,roll)
+  s <- score(roll); scores <- c(scores,s)
+  
+  if(s$score)
+}
+```
+
+```{r}
+play <- function(threshold=0){
+  
+  rolls <- c()
+  scores <- c()
+  
+  roll <- roll.dice(5,TRUE); rolls <- c(rolls,roll)
+  s <- score(roll); scores <- c(scores,s)
+  
+  points <- s$score
+  continue <- FALSE
+  
+  if(s$must.continue){
+    continue <- TRUE
+  } else{
+    continue <- (points < threshold) # continue if score less than threshold
+  }
+  
+  if(s$score == points) return(0)
+  
+  while(continue){
+    roll.dice(s$dice.remaining,!s$wild.used)
+    s <- score(roll,points)
+    
+    points <- points + s$score
+    continue <- FALSE
+  
+    if(s$must.continue){
+      continue <- TRUE
+    } else{
+      continue <- (points < threshold) # continue if score less than 50
+    }
+    
+    if(s$score == points) return(0)
+    
+  }
+  
+  return(points)
+}
+```
+
+```{r}
+play()
+```
+
+
+
+
+
+
+
+
+
+
+
+

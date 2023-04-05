@@ -1,0 +1,35 @@
+---
+title: "02a01 FunctionTests"
+output: html_document
+date: "2023-03-30"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+source("02a CosmicWimpoutFunctions.R")
+```
+
+```{r}
+roll <- roll.dice(5,TRUE)
+roll
+score(roll)$trainwreck
+```
+
+Check for number of trainwrecks
+
+```{r}
+count <- 0
+for(i in 1:100000){
+  roll <- roll.dice(5,TRUE)
+  count <- count + score(roll)$trainwreck
+}
+count/100000
+```
+
+
+
+
+

@@ -1,29 +1,3 @@
----
-title: "CosmicWimpout"
-output:
-  pdf_document: default
-  html_document: default
-date: "2023-03-28"
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-
-## `roll.dice` function
-
-Rolls a set of dice in Cosmic Wimpout
-
-**Input: **
-- n.dice: number of dice to roll
-- wild (boolean): whether the wild die is in the set of dice
-
-**Output: **
-- dice: set of dice
-- wild: the wild die (NULL if wild not rolled)
-
-```{r}
 roll.dice <- function(n.dice, wild){
   if(wild){
     n.dice <- n.dice-1
@@ -37,38 +11,17 @@ roll.dice <- function(n.dice, wild){
   
   return(list(dice=dice,wild=w))
 }
-```
 
-```{r}
-roll.dice(5,TRUE)
-roll.dice(4,FALSE)
-```
-
-## `score` function
-
-Scores a roll.
-
-**Input: ** 
-- A Comic Wimpout roll (`roll.dice` function defined above)
-- Starting score to add on to
-
-**Output: **
-- Score: Player score (excludes using wild die as an individual 5/10)
-- wild.used: tells player whether the wild die was used to complete a set
-- dice.remaining: tells player how many dice they have for their next roll
-- must.continue (boolean): tells player if they need to continue to roll.
-- triple: if a triple was rolled, which tripple. False otherwise.
-
-```{r}
 score <- function(roll,score=0){
   
-  wild.used <- FALSE
   w <- roll$wild; if(is.null(w)) wild.used <- TRUE
   r <- roll$dice
   
+  wild.used <- FALSE
   dice.remaining <- length(r)
   must.continue <- FALSE
   triple <- FALSE
+  trainwreck <- FALSE
   
   for(i in c(10,6:2)){
     n <- length(which(r==i))
@@ -77,7 +30,7 @@ score <- function(roll,score=0){
       if(w==i|w==3){ # if wild matches i or wild completes 5
         score <- score + i*100
         wild.used <- TRUE
-        
+        dice.remaining <- dice.remaining-4
         must.continue <- TRUE # all five dice scored
       } else{ # do not use wild
         # score 3/4
@@ -100,6 +53,7 @@ score <- function(roll,score=0){
     else if(n==2){
       if((w==i|w==3)&!wild.used){
         score <- score + i*10
+        dice.remaining <- dice.remaining-2
         wild.used <- TRUE
         triple <- i
         must.continue <- TRUE # triple
@@ -112,8 +66,8 @@ score <- function(roll,score=0){
     }
     else if(n==1){
       # if 5/10 die, score it, remove one dice
-        score <- score + (i==5|i==10)*i
-        dice.remaining <- dice.remaining - (i==5|i==10)
+      score <- score + (i==5|i==10)*i
+      dice.remaining <- dice.remaining - (i==5|i==10)
     }
   }
   
@@ -126,50 +80,23 @@ score <- function(roll,score=0){
       dice.remaining <- dice.remaining-(w==5|w==10)
     }
   }
-  else if(dice.remaining==5){ # if no dice scored, must score wild
-    score <- score + w*(w==5|w==10)
-    wild.used <- (w==5|w==10)
-    dice.remaining <- dice.remaining-(w==5|w==10)
+  else if(dice.remaining==length(r)){ # if no dice scored, must score wild
+    if(w==5|w==10){
+      score <- score + w
+      wild.used <- TRUE
+      dice.remaining <- dice.remaining-1
+    }
+    else if(w==3){
+      score <- score + 10
+      wild.used <- TRUE
+      dice.remaining <- dice.remaining-1
+    }else{
+      if(length(r)==4 & !is.null(w)) trainwreck <- TRUE
+    }
   }
   
-  return(list(score=score,wild.used=wild.used,dice.remaining=dice.remaining,must.continue=must.continue,triple=triple))
+  return(list(score=score,wild.used=wild.used,dice.remaining=dice.remaining,must.continue=must.continue,triple=triple,trainwreck=trainwreck))
 }
-```
-
-```{r}
-roll <- roll.dice(5,wild=TRUE)
-roll
-```
-
-```{r}
-score(roll)
-```
-
-## Experiments
-
-```{r}
-  roll <- roll.dice(5,TRUE)
-  
-  s <- score(roll)
-  continue <- FALSE
-  
-  if(s$must.continue){
-    continue <- TRUE
-  } else{
-    continue <- (s$score < 50) # continue if score is less than 50
-  }
-  
-  
-  if(s$must.continue){
-    roll <- roll.dice(s$dice.remaining,!s$wild.used)
-  } else{
-    roll <-
-  }
-```
-
-
-
-
 
 
 

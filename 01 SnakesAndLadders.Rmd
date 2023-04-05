@@ -1,0 +1,168 @@
+---
+title: "Snakes and Ladders"
+output:
+  pdf_document: default
+  html_document: default
+date: "2023-03-27"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Snakes and Ladders
+
+```{r}
+roll.die <- function(){
+  return(sample(size=1,1:6))
+}
+```
+
+```{r}
+initialize.board <- function(dim, n.ladders, n.snakes){
+  set.seed(47)
+  
+  spaces <- dim^2
+  
+  occupied <- c()
+  
+  ladder.starts <- sample(size=n.ladders,1:(spaces-dim),replace=FALSE)
+  occupied <- c(occupied,ladder.starts)
+  
+  ladder.ends <- c()
+  for(i in 1:n.ladders){
+    le <- ceiling(ladder.starts[i]/dim)*dim # ensures ladder ends at least one row above
+    m <- min(40,spaces-1-le)
+    end <- le+sample(size=1,1:m)
+    while(end %in% occupied){
+      end <- le+sample(size=1,1:m)
+    } 
+    occupied <- c(occupied, end)
+    ladder.ends <- c(ladder.ends,end)
+  }
+  
+  snakes.starts <- c()
+  for(i in 1:n.snakes){
+    ss <- sample(size=1,(dim+1):(spaces-1),replace=FALSE)
+    while(ss %in% occupied){
+      ss <- sample(size=1,11:99,replace=FALSE)
+    }
+    occupied <- c(occupied, ss)
+    snakes.starts <- c(snakes.starts,ss)
+  }
+  
+  snakes.ends <- c()
+  for(i in 1:n.snakes){
+    se <- floor(snakes.starts[i]/dim)*dim # ensures snake ends at least one row below
+    m <- min(40,se)
+    end <- se-sample(size=1,0:m)
+    while(end %in% occupied){
+      end <- se-sample(size=1,0:m)
+    }
+    occupied <- c(occupied, end)
+    snakes.ends <- c(snakes.ends,end)
+  }
+  
+  ladders <- data.frame(ladder.starts,ladder.ends)
+  snakes <- data.frame(snakes.starts,snakes.ends)
+  
+  return(list(dim=dim,ladders=ladders,snakes=snakes))
+  
+}
+```
+
+```{r}
+play.turn <- function(state,board){
+  
+  ladders <- board$ladders
+  snakes <- board$snakes
+  
+  state <- state + roll.die()
+    
+  if(state %in% ladders[,1]){
+    state <- ladders[which(ladders[,1] == state),2]
+  }
+  else if(state %in% snakes[,1]){
+    state <- snakes[which(snakes[,1] == state),2]
+  }
+  
+  return(state)
+  
+}
+```
+
+```{r}
+# default to play from beginning
+play <- function(board,state=0){
+  turns <- 0
+  
+  while(state < (board$dim)^2){
+    
+    state <- play.turn(state,board)
+    turns <- turns+1
+    
+  }
+  
+  return(turns)
+}
+```
+
+```{r}
+board <- initialize.board(10,10,10)
+
+plays <- c()
+for(i in 1:1000){
+  plays <- c(plays,play(board))
+}
+```
+
+```{r}
+hist(plays)
+boxplot(plays)
+```
+
+### other functions
+
+```
+rand.ladders <- function(n.ladders){
+  set.seed(47)
+  
+  ladder.starts <- sample(size=10,1:90,replace=FALSE)
+  
+  ladder.ends <- c()
+  
+  for(i in 1:n.ladders){
+    le <- ceiling(ladder.starts[i]/10)*10 # ensures ladder ends at least one row above
+    m <- min(40,99-le)
+    ladder.ends <- c(ladder.ends,le+sample(size=1,1:m))
+  }
+  
+  ladders <- data.frame(ladder.starts,ladder.ends)
+  
+  return(ladders)
+}
+```
+
+```
+rand.snakes <- function(n.snakes){
+  set.seed(47)
+  
+  snakes.starts <- sample(size=10,11:99,replace=FALSE)
+  
+  snakes.ends <- c()
+  
+  for(i in 1:n.snakes){
+    se <- floor(snakes.starts[i]/10)*10 # ensures snake ends at least one row below
+    m <- min(40,se)
+    snakes.ends <- c(snakes.ends,se-sample(size=1,0:m))
+  }
+  
+  snakes <- data.frame(snakes.starts,snakes.ends)
+  
+  return(snakes)
+}
+```
+
+
+
+
