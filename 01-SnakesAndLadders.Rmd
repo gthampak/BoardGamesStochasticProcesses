@@ -100,7 +100,6 @@ play <- function(board,state=0){
     
     state <- play.turn(state,board)
     turns <- turns+1
-    
   }
   
   return(turns)
@@ -114,6 +113,7 @@ plays <- c()
 for(i in 1:1000){
   plays <- c(plays,play(board))
 }
+mean(plays)
 ```
 
 ```{r}
