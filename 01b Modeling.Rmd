@@ -1,0 +1,119 @@
+---
+title: "01b Modeling"
+output: html_document
+date: "2023-04-05"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# for converting decimals to fractions
+library(MASS)
+```
+
+```{r}
+source("01z Functions.R")
+```
+
+```{r}
+trans.mat <- function(board){
+  spaces <- (board$dim)^2
+  tm <- matrix(0,nrow=spaces,ncol=spaces)
+  for(i in 1:(spaces)){
+    for(j in 1:6){
+      if( (i+j) %in% board$ladders$ladder.starts){
+        index <- which(board$ladders$ladder.starts == (i+j))
+        tm[i,board$ladders$ladder.ends[index]] <- tm[i,board$ladders$ladder.ends[index]]+1/6
+      }
+      else if( (i+j) %in% board$snakes$snakes.starts){
+        index <- which(board$snakes$snakes.starts == (i+j))
+        tm[i,board$snakes$snakes.ends[index]] <- tm[i,board$snakes$snakes.ends[index]] +1/6
+      }
+      else{
+        if(i+j > spaces) tm[i,i] <- tm[i,i]+1/6
+        else tm[i,i+j] <- tm[i,i+j]+1/6
+      }
+    }
+  }
+  
+  # for(i in 5:1){
+  #   for(j in (spaces-i+1):spaces){
+  #     if( j %in% board$ladders$ladder.starts){
+  #       index <- which(board$ladders$ladder.starts == j)
+  #       tm[spaces-i,board$ladders$ladder.ends[index]] <- tm[spaces-i,board$ladders$ladder.ends[index]]+1/i
+  #     }
+  #     else if( j %in% board$snakes$snakes.starts){
+  #       index <- which(board$snakes$snakes.starts == j)
+  #       tm[spaces-i,board$snakes$snakes.ends[index]] <- tm[spaces-i,board$snakes$snakes.ends[index]]+1/i
+  #     }
+  #     else{
+  #       tm[spaces-i,j] <- tm[spaces-i,j]+1/i
+  #     }
+  #   }
+  # }
+  
+  tm[spaces,spaces] <- 1
+  
+  return(fractions(tm))
+}
+```
+
+## Sanity Check
+
+```{r}
+sum(trans.mat(board))
+```
+```{r}
+for(i in 1:board$dim^2) print(sum(trans.mat(board)[i,]))
+```
+
+```{r}
+print.tm <- function(tm){
+  p <- ""
+  for(i in 1:nrow(tm)){
+    for(j in 1:ncol(tm)){
+      if(j==ncol(tm)) p <- paste(p,tm[i,j],'\\\\','\n')
+      else p <- paste(p, tm[i,j], '&')
+    }
+  }
+  
+  cat(p)
+}
+```
+
+# Board 1
+
+```{r}
+board <- list()
+board$dim <- 4
+board$ladders <- data.frame(ladder.starts = c(3,5),ladder.ends = c(10,12))
+board$snakes <- data.frame(snakes.starts = c(11,15), snakes.ends = c(4,8))
+```
+
+```{r}
+tm <- trans.mat(board)
+print.tm(tm)
+sum(tm)
+```
+
+```{r}
+F.dim <- board$dim^2-1
+Q <- tm[1:F.dim,1:F.dim]
+I <- matrix(0,nrow=F.dim,ncol=F.dim)
+for(i in 1:F.dim) I[i,i] <- 1
+fractions(solve(I-Q))
+```
+
+
+
+
+
+
+
+
+
+
+
+

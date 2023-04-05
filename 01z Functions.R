@@ -1,22 +1,7 @@
----
-title: "01a Experiments"
-output: html_document
-date: "2023-04-05"
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-## Functions
-
-```{r}
 roll.die <- function(){
   return(sample(size=1,1:6))
 }
-```
 
-```{r}
 initialize.board <- function(dim, n.ladders, n.snakes){
   
   spaces <- dim^2
@@ -42,7 +27,7 @@ initialize.board <- function(dim, n.ladders, n.snakes){
   for(i in 1:n.snakes){
     ss <- sample(size=1,(dim+1):(spaces-1),replace=FALSE)
     while(ss %in% occupied){
-      ss <- sample(size=1,11:99,replace=FALSE)
+      ss <- sample(size=1,(dim+1):(spaces-1),replace=FALSE)
     }
     occupied <- c(occupied, ss)
     snakes.starts <- c(snakes.starts,ss)
@@ -66,9 +51,7 @@ initialize.board <- function(dim, n.ladders, n.snakes){
   return(list(dim=dim,ladders=ladders,snakes=snakes))
   
 }
-```
 
-```{r}
 play.turn <- function(state,board){
   
   ladders <- board$ladders
@@ -76,7 +59,7 @@ play.turn <- function(state,board){
   
   initial.state <- state
   state <- state + roll.die()
-    
+  
   if(state %in% ladders[,1]){
     state <- ladders[which(ladders[,1] == state),2]
   }
@@ -89,10 +72,7 @@ play.turn <- function(state,board){
   return(state)
   
 }
-```
 
-```{r}
-# default to play from beginning
 play <- function(board,state=0){
   turns <- 0
   
@@ -105,37 +85,7 @@ play <- function(board,state=0){
   
   return(turns)
 }
-```
 
-## Game 1
-
-```{r}
-board <- list()
-board$dim <- 4
-board$ladders <- data.frame(ladder.starts = c(3,5),ladder.ends = c(10,12))
-board$snakes <- data.frame(snakes.starts = c(11,15), snakes.ends = c(4,8))
-board
-```
-
-```{r}
-board <- initialize.board(4,2,2)
-```
-
-```{r}
-plays <- c()
-for(i in 1:10000){
-  plays <- c(plays,play(board))
-}
-```
-
-```{r}
-hist(plays)
-mean(plays)
-boxplot(plays)
-```
-
-
-```{r}
 trans.mat <- function(board){
   spaces <- (board$dim)^2
   tm <- matrix(0,nrow=spaces,ncol=spaces)
@@ -143,14 +93,14 @@ trans.mat <- function(board){
     for(j in 1:6){
       if( (i+j) %in% board$ladders$ladder.starts){
         index <- which(board$ladders$ladder.starts == (i+j))
-        tm[i,board$ladders$ladder.ends[index]] <- 1/6
+        tm[i,board$ladders$ladder.ends[index]] <- tm[i,board$ladders$ladder.ends[index]]+1/6
       }
       else if( (i+j) %in% board$snakes$snakes.starts){
         index <- which(board$snakes$snakes.starts == (i+j))
-        tm[i,board$snakes$snakes.ends[index]] <- 1/6
+        tm[i,board$snakes$snakes.ends[index]] <- tm[i,board$snakes$snakes.ends[index]] +1/6
       }
       else{
-        tm[i,i+j] <- 1/6
+        tm[i,i+j] <- tm[i,i+j]+1/6
       }
     }
   }
@@ -159,14 +109,14 @@ trans.mat <- function(board){
     for(j in (spaces-i+1):spaces){
       if( j %in% board$ladders$ladder.starts){
         index <- which(board$ladders$ladder.starts == j)
-        tm[spaces-i,board$ladders$ladder.ends[index]] <- 1/i
+        tm[spaces-i,board$ladders$ladder.ends[index]] <- tm[spaces-i,board$ladders$ladder.ends[index]]+1/i
       }
       else if( j %in% board$snakes$snakes.starts){
         index <- which(board$snakes$snakes.starts == j)
-        tm[spaces-i,board$snakes$snakes.ends[index]] <- 1/i
+        tm[spaces-i,board$snakes$snakes.ends[index]] <- tm[spaces-i,board$snakes$snakes.ends[index]]+1/i
       }
       else{
-        tm[spaces-i,j] <- 1/i
+        tm[spaces-i,j] <- tm[spaces-i,j]+1/i
       }
     }
   }
@@ -175,26 +125,7 @@ trans.mat <- function(board){
   
   return(fractions(tm))
 }
-```
 
-## Sanity Check
-
-```{r}
-sum(trans.mat(board))
-```
-```{r}
-library(MASS)
-```
-
-```{r}
-board$snake
-```
-
-```{r}
-trans.mat(board)
-```
-
-```{r}
 print.tm <- function(tm){
   p <- ""
   for(i in 1:nrow(tm)){
@@ -204,15 +135,8 @@ print.tm <- function(tm){
     }
   }
   
-  return(p)
+  cat(p)
 }
-```
-
-```{r}
-cat(print.tm(trans.mat(board)))
-```
-
-
 
 
 

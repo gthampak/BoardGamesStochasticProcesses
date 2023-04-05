@@ -45,7 +45,7 @@ initialize.board <- function(dim, n.ladders, n.snakes){
   for(i in 1:n.snakes){
     ss <- sample(size=1,(dim+1):(spaces-1),replace=FALSE)
     while(ss %in% occupied){
-      ss <- sample(size=1,11:99,replace=FALSE)
+      ss <- sample(size=1,(dim+1):(spaces-1),replace=FALSE)
     }
     occupied <- c(occupied, ss)
     snakes.starts <- c(snakes.starts,ss)

@@ -1,0 +1,37 @@
+---
+title: "01a Experiments"
+output: html_document
+date: "2023-04-05"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+source("01z Functions.R")
+```
+
+## Board 1
+
+```{r}
+board <- list()
+board$dim <- 4
+board$ladders <- data.frame(ladder.starts = c(3,5),ladder.ends = c(10,12))
+board$snakes <- data.frame(snakes.starts = c(11,15), snakes.ends = c(4,8))
+board
+```
+
+```{r}
+plays <- c()
+for(i in 1:1000){
+  plays <- c(plays,play(board))
+}
+```
+
+```{r}
+hist(plays)
+mean(plays)
+boxplot(plays)
+```
+
