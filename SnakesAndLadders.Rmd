@@ -105,7 +105,7 @@ play <- function(board){
     state <- play.turn(state,board)
     turns <- turns+1
     
-    print(state)
+    #print(state)
     
   }
   
@@ -128,8 +128,9 @@ while(x < 10){
 ```{r}
 plays <- c()
 for(i in 1:1000){
-  plays <- c(plays,play(board$ladders,board$snakes))
+  plays <- c(plays,play(board))
 }
+mean(plays)
 ```
 
 
