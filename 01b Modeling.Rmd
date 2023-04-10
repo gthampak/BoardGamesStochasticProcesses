@@ -47,6 +47,13 @@ trans.mat <- function(board){
 ## Sanity Check
 
 ```{r}
+board <- list()
+board$dim <- 4
+board$ladders <- data.frame(ladder.starts = c(3,5),ladder.ends = c(10,12))
+board$snakes <- data.frame(snakes.starts = c(11,15), snakes.ends = c(4,8))
+```
+
+```{r}
 sum(trans.mat(board))
 ```
 ```{r}
@@ -54,16 +61,30 @@ for(i in 1:board$dim^2) print(sum(trans.mat(board)[i,]))
 ```
 
 ```{r}
-print.tm <- function(tm){
-  p <- ""
-  for(i in 1:nrow(tm)){
-    for(j in 1:ncol(tm)){
-      if(j==ncol(tm)) p <- paste(p,tm[i,j],'\\\\','\n')
-      else p <- paste(p, tm[i,j], '&')
+print.tm <- function(tm,r=0){
+  if(r){
+    p <- ""
+    for(i in 1:nrow(tm)){
+      for(j in 1:ncol(tm)){
+        if(j==ncol(tm)) p <- paste(p,round(tm[i,j],r),'\\\\','\n')
+        else p <- paste(p, round(tm[i,j],r), '&')
+      }
     }
+    
+    cat(p)
   }
-  
-  cat(p)
+  else{
+    p <- ""
+    for(i in 1:nrow(tm)){
+      for(j in 1:ncol(tm)){
+        if(j==ncol(tm)) p <- paste(p,tm[i,j],'\\\\','\n')
+        else p <- paste(p, tm[i,j], '&')
+      }
+    }
+    
+    cat(p)
+    
+  }
 }
 ```
 
@@ -117,8 +138,24 @@ sum(tm)
 ```
 
 ```{r}
+# N
+Q <- trans.mat(board)[1:15,1:15]
+# print.tm(N)
+```
+
+```{r}
+I <- matrix(0,nrow=15,ncol=15); for(i in 1:F.dim) I[i,i] <- 1
+N <- solve(I-Q)
+print.tm(N,2)
+```
+
+```{r}
+expected.turns(board,0)
+```
+
+```{r}
 EV <- E.V.turns.vector(board)
-sqrt(EV$variance)
+print.tm(EV$variance,2)
 ```
 
 # Board 2
@@ -130,7 +167,7 @@ board <- initialize.board(12,12,12)
 ```
 
 ```{r}
-EV <- E.V.turns.vector(board)
+EV <- E.V.turns.vector(bgoard)
 EV$expected
 EV$sd
 ```

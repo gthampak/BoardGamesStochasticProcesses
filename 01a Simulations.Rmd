@@ -23,18 +23,30 @@ board
 ```
 
 ```{r}
-plays <- c()
-for(i in 1:10000){
-  plays <- c(plays,play(board))
-}
+play(board,state=16)
 ```
 
 ```{r}
-hist(plays)
-mean(plays)
-sd(plays)^2
-boxplot(plays)
+library(glue)
 ```
+
+
+```{r}
+rolls <- c()
+for(j in 1:16){
+  rolls <- c()
+  for(i in 1:10000){
+    rolls <- c(rolls,play(board,state=j))
+  }
+  m <- round(mean(rolls),2)
+  s <- round(sd(rolls)^2,2)
+  hist(rolls,breaks=50,xlim=c(0, 50),main=glue("State {j} Start: # of Rolls to Win."))
+  mtext(glue(" Mean = {m}. Var = {s}."), side=3, line = - 2)
+  abline(v=m, col='red')
+}
+```
+
+
 
 # Board 2
 
@@ -51,6 +63,7 @@ for(i in 1:1000){
 ```
 
 ```{r}
+
 hist(plays2,breaks=100)
 mean(plays2)
 sd(plays2)^2

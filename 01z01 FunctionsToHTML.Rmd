@@ -1,4 +1,14 @@
-# Game Set Up Functions
+---
+title: "Functions To HTML"
+output: html_document
+date: "2023-04-10"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
 
 initialize.board <- function(dim, n.ladders, n.snakes){
   
@@ -80,7 +90,7 @@ play.turn <- function(state,board){
 play <- function(board,state=1){
   turns <- 0
   
-  while(!state==(board$dim)^2){
+  while(state < (board$dim)^2){
     
     state <- play.turn(state,board)
     turns <- turns+1
@@ -148,12 +158,4 @@ E.V.turns.vector <- function(board){
 }
 
 
-
-
-
-
-
-
-
-
-
+```
